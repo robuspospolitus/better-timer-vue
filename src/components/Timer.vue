@@ -25,7 +25,6 @@ function animate(time:number) {
   if(!isCounting.value) return;
   const elapsed = (time - startTime) / 1000;
   progress.value = elapsed / totalseconds * 100;
-
   if(elapsed < totalseconds) animationId = requestAnimationFrame(animate);
   else {
     progress.value = 100;
