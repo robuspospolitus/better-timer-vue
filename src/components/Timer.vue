@@ -13,6 +13,7 @@ const props = defineProps<{
 const numberofsections = props.sections.length;
 const progress = ref(0);
 const isCounting = ref(false);
+const elapsed = ref(0);
 let animationId:number;
 let totalseconds = 0;
 let startTime = 0;
@@ -23,13 +24,14 @@ const progressStyle = computed(() => ({ "--progress": progress.value + "%" }));
 
 function animate(time:number) {
   if(!isCounting.value) return;
-  const elapsed = (time - startTime) / 1000;
-  progress.value = elapsed / totalseconds * 100;
-  if(elapsed < totalseconds) animationId = requestAnimationFrame(animate);
+  elapsed.value = (time - startTime) / 1000;
+  progress.value = elapsed.value / totalseconds * 100;
+  if(elapsed.value < totalseconds) animationId = requestAnimationFrame(animate);
   else {
     progress.value = 100;
     isCounting.value = false;
   }
+  return elapsed;
 }
 
 function handleTimer() {
@@ -52,13 +54,20 @@ function handleView() {
   style += "transparent 99.5%);";
   return style;
 }
+
+const handleCountingTemplate = computed(() => {
+  const hours = Math.floor(elapsed.value / 3600);
+  const minutes = Math.floor((elapsed.value / 60) - Number(hours)*60);
+  const seconds = Math.floor((elapsed.value) - Number(hours)*3600 - minutes*60);
+  return (hours < 10 ? "0"+hours : hours)+":"+(minutes < 10 ? "0"+minutes : minutes)+":"+(seconds < 10 ? "0"+seconds : seconds);
+});
 </script>
 
 <template>
     <div id="box">
         <div class="circle" :style="handleView()"/>
         <div class="circle above" :style="progressStyle"/>
-        <h2>00:00:00</h2>
+        <h2>{{ elapsed > 0 ? handleCountingTemplate : "00:00:00" }}</h2>
     </div>
     <button @click="handleTimer">{{ isCounting ? "stop":"start" }}</button>
 </template>
@@ -116,5 +125,11 @@ h2 {
   font-size: 3em;
   z-index: 3;
   font-weight: 500;
+}
+@media screen and (max-width: 320px) {
+  h2{ font-size: 2.5em; }
+}
+@media screen and (min-width: 425px) {
+  h2{ font-size: 3.5em; }
 }
 </style>

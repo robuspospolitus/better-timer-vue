@@ -18,6 +18,13 @@ let section = [
     color: "green",
 
   },
+  {
+    name: "lola",
+    time: 30,
+    additional_time: 1,
+    color: "blue",
+
+  },
   ];
 </script>
 
